@@ -278,7 +278,7 @@ func (v *visitor) VisitFile(path string, f *os.FileInfo) {
 		return
 	}
 
-	file, err := os.Open(path, os.O_RDONLY, 0444)
+	file, err := os.Open(path)
 	if err != nil {
 		panic(err)
 	}
