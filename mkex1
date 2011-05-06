@@ -1,0 +1,14 @@
+# Copyright 2009 The Go Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+include $(GOROOT)/src/Make.inc
+
+TARG=./example1
+GOFILES=\
+	example1.go\
+
+include $(GOROOT)/src/Make.cmd
+
+example1.go: example1.l
+	golex -t example1.l | gofmt > example1.go
