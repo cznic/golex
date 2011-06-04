@@ -15,7 +15,7 @@
 //	-o fname        write to file `fname`, default is `lex.yy.go`
 //	-t              write to stdout
 //	-v              write some scanner statistics to stderr
-//	-32bit          assume unicode rune lexer (partially implemented)
+//	-32bit          assume unicode rune lexer (partially implemented, disabled)
 //
 // Golex output is not pretty formated, use the standard tool:
 //

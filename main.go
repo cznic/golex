@@ -10,9 +10,9 @@ package main
 
 import (
 	"bufio"
+	"github.com/cznic/lex"
 	"flag"
 	"fmt"
-	"github.com/cznic/lex"
 	"io"
 	"os"
 )
@@ -59,7 +59,7 @@ func (r *noRender) wprintf(s string, args ...interface{}) (n int, err os.Error) 
 }
 
 
-func q(c int) string {
+func q(c uint32) string {
 	switch c {
 	default:
 		s := fmt.Sprintf("%q", string(c))
@@ -93,7 +93,7 @@ func main() {
 	flag.BoolVar(&tflag, "t", false, "write scanner on stdout instead of "+OFILE)
 	flag.BoolVar(&vflag, "v", false, "write summary of scanner statistics to stderr")
 	flag.BoolVar(&nodfaopt, "nodfaopt", false, "disable DFA optimization - don't use this for production code")
-	flag.BoolVar(&bits32, "32bit", false, "assume unicode rune lexer (partially implemented)")
+	//flag.BoolVar(&bits32, "32bit", false, "assume unicode rune lexer (partially implemented)")
 	flag.Parse()
 	if hflag || flag.NArg() > 1 {
 		flag.Usage()

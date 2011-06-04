@@ -9,9 +9,9 @@ package main
 
 
 import (
-	"fmt"
 	"github.com/cznic/lex"
 	"github.com/cznic/lexer"
+	"fmt"
 	"strings"
 )
 
@@ -112,12 +112,12 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 		case *lexer.RuneEdge:
 			cases[edge.Rune] = false, false
 		case *lexer.RangesEdge:
-			if defaultEdge == nil || len(edge.Ranges) > len(defaultEdge.Ranges) {
+			if defaultEdge == nil || len(edge.Ranges.R32) > len(defaultEdge.Ranges.R32) {
 				defaultEdge = edge
 			}
-			for _, rng := range edge.Ranges {
+			for _, rng := range edge.Ranges.R32 {
 				for c := rng.Lo; c <= rng.Hi; c += rng.Stride {
-					cases[c] = false, false
+					cases[int(c)] = false, false
 				}
 			}
 		}
@@ -138,7 +138,7 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 
 func (r *renderGo) rangesEdgeString(edge *lexer.RangesEdge, l *lex.L) string {
 	a := []string{}
-	for _, rng := range edge.Ranges {
+	for _, rng := range edge.Ranges.R32 {
 		if rng.Stride != 1 {
 			panic("internal error")
 		}
@@ -173,7 +173,7 @@ func (r *renderGo) transitions(l *lex.L, state *lexer.NfaState) {
 		default:
 			panic("unexpected type")
 		case *lexer.RuneEdge:
-			r.wprintf("%s == %s", l.YYC, q(edge.Rune))
+			r.wprintf("%s == %s", l.YYC, q(uint32(edge.Rune)))
 		case *lexer.RangesEdge:
 			r.wprintf(r.rangesEdgeString(edge, l))
 		}
