@@ -1,2 +1,5 @@
 This is a goinstall-able mirror of modified code already published at:
 http://git.nic.cz/redmine/projects/gogolex/repository
+
+Online godoc documentation for this program available at:
+http://gopkgdoc.appspot.com/pkg/github.com/cznic/golex
