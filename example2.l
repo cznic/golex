@@ -229,7 +229,16 @@ var         return KWD
 	if current >= '\xC2' && current <= '\xF4' {
 		pos--
 		column--
-		goto idNext
+		for {
+			l, c, runepos := line, column, pos
+			rune := getRune()
+			if !(rune == '_' || unicode.IsLetter(rune) || unicode.IsDigit(rune)) {
+				pos = runepos
+				current = getc()
+				line, column = l, c
+				break
+			}
+		}
 	}
 	return IDENT
 
@@ -239,7 +248,6 @@ var         return KWD
 		panic(fmt.Errorf("expected unicode letter, got %U", rune))
 	}
 
-	idNext:
 	for {
 		l, c, runepos := line, column, pos
 		rune := getRune()
