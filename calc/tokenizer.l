@@ -23,11 +23,11 @@ type yylexer struct{
 }
 
 func newLexer(src *bufio.Reader) (y *yylexer) {
-	y = &yylexer{src: src}
+    y = &yylexer{src: src}
     if b, err := src.ReadByte(); err == nil {
         y.current = b
     }
-	return
+    return
 }
 
 func (y *yylexer) getc() byte {
@@ -42,7 +42,6 @@ func (y *yylexer) getc() byte {
 }
 
 func (y yylexer) Error(e string) {
-    println("in Error")
     log.Fatal(e)
 }
 
@@ -58,7 +57,7 @@ func (y *yylexer) Lex(lval *yySymType) int {
 %yyn c = y.getc()
 
 D  [0-9]+
-E  [eE][-+]?[0-9]+
+E  [eE][-+]?{D}
 F  {D}"."{D}?{E}?|{D}{E}?|"."{D}{E}?
 
 %%
