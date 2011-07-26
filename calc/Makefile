@@ -10,7 +10,7 @@ GOFILES=\
 	calc.go\
 	tokenizer.go\
 
-CLEANFILES += tokenizer.go calc.go y.output
+CLEANFILES += tokenizer.go calc.go y.output *~
 
 include $(GOROOT)/src/Make.cmd
 

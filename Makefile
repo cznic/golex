@@ -5,13 +5,14 @@
 include $(GOROOT)/src/Make.inc
 
 TARG=golex
+
 GOFILES=\
 	main.go\
 	render.go\
 
 include $(GOROOT)/src/Make.cmd
 
-CLEANFILES+=example1 example1.go example2 example2.go lex.yy.go
+CLEANFILES+=example1 example1.go example2 example2.go lex.yy.go *~
 
 example1: example1.l $(GOFILES)
 	make install clean && make -f mkex1

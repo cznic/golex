@@ -7,7 +7,6 @@
 
 package main
 
-
 import (
 	"bufio"
 	"github.com/cznic/lex"
@@ -21,7 +20,6 @@ const (
 	OFILE = "lex.yy.go"
 )
 
-
 var (
 	stdin  = bufio.NewReader(os.Stdin)
 	stdout = bufio.NewWriter(os.Stdout)
@@ -32,22 +30,18 @@ type renderer interface {
 	render(srcname string, l *lex.L)
 }
 
-
 type writer interface {
 	io.Writer
 	wprintf(s string, args ...interface{}) (n int, err os.Error)
 }
 
-
 type noRender struct {
 	w io.Writer
 }
 
-
 func (r *noRender) Write(p []byte) (n int, err os.Error) {
 	return r.w.Write(p)
 }
-
 
 func (r *noRender) wprintf(s string, args ...interface{}) (n int, err os.Error) {
 	n, err = io.WriteString(r.w, fmt.Sprintf(s, args...))
@@ -57,7 +51,6 @@ func (r *noRender) wprintf(s string, args ...interface{}) (n int, err os.Error) 
 
 	return
 }
-
 
 func q(c uint32) string {
 	switch c {
@@ -72,7 +65,6 @@ func q(c uint32) string {
 
 	panic("unreachable")
 }
-
 
 func main() {
 

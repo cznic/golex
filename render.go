@@ -7,7 +7,6 @@
 
 package main
 
-
 import (
 	"github.com/cznic/lex"
 	"github.com/cznic/lexer"
@@ -15,12 +14,10 @@ import (
 	"strings"
 )
 
-
 type renderGo struct {
 	noRender
 	scStates map[int]bool
 }
-
 
 func (r *renderGo) prolog(l *lex.L) {
 	for _, state := range l.StartConditionsStates {
@@ -60,7 +57,6 @@ func (r *renderGo) prolog(l *lex.L) {
 	}
 }
 
-
 func (r *renderGo) rules(l *lex.L) {
 	for i := 1; i < len(l.Rules); i++ {
 		rule := l.Rules[i]
@@ -80,19 +76,16 @@ func (r *renderGo) rules(l *lex.L) {
 	r.wprintf(`panic("unreachable")` + "\n")
 }
 
-
 func (r *renderGo) scanFail(l *lex.L) {
 	r.wprintf("\ngoto yyabort // silence unused label error\n")
 	r.wprintf("\nyyabort: // no lexem recognized\n")
 }
-
 
 func (r *renderGo) userCode(l *lex.L) {
 	if userCode := l.UserCode; userCode != "" {
 		r.w.Write([]byte(userCode))
 	}
 }
-
 
 func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEdge *lexer.RangesEdge) {
 	r.wprintf("default:\n")
@@ -135,7 +128,6 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 	panic("internal error")
 }
 
-
 func (r *renderGo) rangesEdgeString(edge *lexer.RangesEdge, l *lex.L) string {
 	a := []string{}
 	for _, rng := range edge.Ranges.R32 {
@@ -158,7 +150,6 @@ func (r *renderGo) rangesEdgeString(edge *lexer.RangesEdge, l *lex.L) string {
 	}
 	return strings.Replace(strings.Join(a, " || "), "%", "%%", -1)
 }
-
 
 func (r *renderGo) transitions(l *lex.L, state *lexer.NfaState) {
 	r.wprintf("switch {\n")
@@ -207,7 +198,6 @@ func (r *renderGo) states(l *lex.L) {
 		}
 	}
 }
-
 
 func (r renderGo) render(srcname string, l *lex.L) {
 	r.prolog(l)
