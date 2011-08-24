@@ -57,6 +57,38 @@ func (r *renderGo) prolog(l *lex.L) {
 	}
 }
 
+func isReturn(code string) bool {
+	const ret = "return"
+	lenret := len(ret)
+	lines := strings.Split(code, "\n")
+	for {
+		l := len(lines)
+		if l == 0 {
+			break
+		}
+
+		line := strings.TrimSpace(lines[l-1])
+		if line == "" {
+			lines = lines[:l-1]
+			continue
+		}
+
+		if len(line) >= lenret && line[:lenret] == ret {
+			if len(line) == lenret {
+				return true
+			}
+
+			if c := line[lenret]; c == ' ' || c == '\t' {
+				return true
+			}
+		}
+
+		break
+
+	}
+	return false
+}
+
 func (r *renderGo) rules(l *lex.L) {
 	for i := 1; i < len(l.Rules); i++ {
 		rule := l.Rules[i]
@@ -67,7 +99,9 @@ func (r *renderGo) rules(l *lex.L) {
 			r.w.Write([]byte(rule.Action))
 		}
 		if act != "|" {
-			r.wprintf("\ngoto yystate0\n")
+			if !isReturn(rule.Action) {
+				r.wprintf("\ngoto yystate0\n")
+			}
 		}
 		if act != "" && act != "|" {
 			r.wprintf("}\n")
