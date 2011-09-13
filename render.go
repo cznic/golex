@@ -99,8 +99,9 @@ func (r *renderGo) rules(l *lex.L) {
 			r.w.Write([]byte(rule.Action))
 		}
 		if act != "|" {
+			r.wprintf("\n")
 			if !isReturn(rule.Action) {
-				r.wprintf("\ngoto yystate0\n")
+				r.wprintf("goto yystate0\n")
 			}
 		}
 		if act != "" && act != "|" {
