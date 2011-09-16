@@ -261,7 +261,7 @@ var         return KWD
 	return IDENT
 
 %%
-	panic(fmt.Errorf("no lexeme recognized"))
+	return unicode.ReplacementChar
 }
 
 type visitor struct {
@@ -271,12 +271,7 @@ type visitor struct {
 }
 
 
-func (v *visitor) VisitDir(path string, f *os.FileInfo) bool {
-	return true
-}
-
-
-func (v *visitor) VisitFile(path string, f *os.FileInfo) {
+func (v *visitor) visitFile(path string, f *os.FileInfo) {
 	ok, err := filepath.Match("*.go", filepath.Base(path))
 	if err != nil {
 		panic(err)
@@ -316,8 +311,10 @@ loop:
 			v.tokCount++
 		case x == 0:
 			break loop
+		case x == unicode.ReplacementChar:
+			return
 		case x < SEP || x > IMAG:
-			panic(fmt.Errorf("%q", string(x)))
+			panic(fmt.Errorf("%s:%d:%d - scan fail", path, line, column))
 		}
 	}
 
@@ -336,6 +333,15 @@ func main() {
 	}()
 
 	v := &visitor{}
-	filepath.Walk(runtime.GOROOT()+"/src", v, nil)
+	filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info *os.FileInfo, err os.Error) os.Error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDirectory() {
+			v.visitFile(pth, info)
+		}
+		return nil
+	}) 
 	fmt.Printf("%d .go files, %d bytes, %d tokens\n", v.count, v.size, v.tokCount)
 }
