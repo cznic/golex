@@ -29,7 +29,7 @@
 //	- The generated FSM picks the rules in the order of their appearance in the .l source,
 //	  but "flex picks the rule that matches the most text".
 //	- No back step. For patterns `a` and `abc` the text `abxy` doesn't match anything.
-//	  Flex would match pattern `a` after seeing `x` and it's next scan will start at `b`.
+//	  Flex would match pattern `a` after seeing `x` and its next scan will start at `b`.
 //	  The lex.L FSM has all the data to properly render this functionality,
 //	  it's only this tool that doesn't implement it.
 //	- And probably more.
