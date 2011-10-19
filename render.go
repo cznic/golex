@@ -138,14 +138,14 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 		default:
 			panic("unexpected type")
 		case *lexer.RuneEdge:
-			cases[edge.Rune] = false, false
+			delete(cases, edge.Rune)
 		case *lexer.RangesEdge:
 			if defaultEdge == nil || len(edge.Ranges.R32) > len(defaultEdge.Ranges.R32) {
 				defaultEdge = edge
 			}
 			for _, rng := range edge.Ranges.R32 {
 				for c := rng.Lo; c <= rng.Hi; c += rng.Stride {
-					cases[int(c)] = false, false
+					delete(cases, int(c))
 				}
 			}
 		}
