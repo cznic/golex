@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"unicode"
-	"utf8"
+	"unicode/utf8"
 )
 
 var (
@@ -333,7 +333,7 @@ func main() {
 	}()
 
 	v := &visitor{}
-	filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info *os.FileInfo, err os.Error) os.Error {
+	filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info *os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

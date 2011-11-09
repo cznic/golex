@@ -11,7 +11,6 @@ package main
 import (
     "bufio"
     "log"
-    "os"
     "strconv"
 )
 
@@ -46,7 +45,7 @@ func (y yylexer) Error(e string) {
 }
 
 func (y *yylexer) Lex(lval *yySymType) int {
-    var err os.Error
+    var err error
     c := y.current
     if y.empty {
         c, y.empty = y.getc(), false

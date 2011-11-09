@@ -32,18 +32,18 @@ type renderer interface {
 
 type writer interface {
 	io.Writer
-	wprintf(s string, args ...interface{}) (n int, err os.Error)
+	wprintf(s string, args ...interface{}) (n int, err error)
 }
 
 type noRender struct {
 	w io.Writer
 }
 
-func (r *noRender) Write(p []byte) (n int, err os.Error) {
+func (r *noRender) Write(p []byte) (n int, err error) {
 	return r.w.Write(p)
 }
 
-func (r *noRender) wprintf(s string, args ...interface{}) (n int, err os.Error) {
+func (r *noRender) wprintf(s string, args ...interface{}) (n int, err error) {
 	n, err = io.WriteString(r.w, fmt.Sprintf(s, args...))
 	if err != nil {
 		panic(err)
@@ -70,7 +70,7 @@ func main() {
 
 	defer func() {
 		if e := recover(); e != nil {
-			fmt.Fprintf(stderr, "%s: %s\n", os.Args[0], e.(os.Error))
+			fmt.Fprintf(stderr, "%s: %s\n", os.Args[0], e.(error))
 			stderr.Flush()
 			os.Exit(1)
 		}
