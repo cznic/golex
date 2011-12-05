@@ -271,7 +271,7 @@ type visitor struct {
 }
 
 
-func (v *visitor) visitFile(path string, f *os.FileInfo) {
+func (v *visitor) visitFile(path string, f os.FileInfo) {
 	ok, err := filepath.Match("*.go", filepath.Base(path))
 	if err != nil {
 		panic(err)
@@ -319,7 +319,7 @@ loop:
 	}
 
 	v.count++
-	v.size += f.Size
+	v.size += f.Size()
 }
 
 
@@ -333,12 +333,12 @@ func main() {
 	}()
 
 	v := &visitor{}
-	filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info *os.FileInfo, err error) error {
+	filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if !info.IsDirectory() {
+		if !info.IsDir() {
 			v.visitFile(pth, info)
 		}
 		return nil
