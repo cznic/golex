@@ -65,7 +65,7 @@ F  {D}"."{D}?{E}?|{D}{E}?|"."{D}{E}?
 [ \t\r]+
 
 {F}
-    if lval.value, err = strconv.Atof64(string(y.buf)); err != nil {
+    if lval.value, err = strconv.ParseFloat(string(y.buf), 64); err != nil {
         log.Fatal(err)
     }
 
