@@ -61,7 +61,7 @@ func begin(cond int) {
 	sc = cond
 }
 
-func getRune() int {
+func getRune() rune {
 	if rune, size := utf8.DecodeRune(src[pos:]); size != 0 {
 		pos += size
 		return rune

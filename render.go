@@ -129,9 +129,9 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 		return
 	}
 
-	cases := map[int]bool{}
+	cases := map[rune]bool{}
 	for i := 0; i < 256; i++ {
-		cases[i] = true
+		cases[rune(i)] = true
 	}
 	for _, edge0 := range state.Consuming {
 		switch edge := edge0.(type) {
@@ -145,7 +145,7 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 			}
 			for _, rng := range edge.Ranges.R32 {
 				for c := rng.Lo; c <= rng.Hi; c += rng.Stride {
-					delete(cases, int(c))
+					delete(cases, rune(c))
 				}
 			}
 		}
