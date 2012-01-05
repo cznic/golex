@@ -4,7 +4,6 @@
 
 // blame: jnml, labs.nic.cz
 
-
 package main
 
 import (
