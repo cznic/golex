@@ -312,7 +312,7 @@ loop:
 		case x == 0:
 			break loop
 		case x == unicode.ReplacementChar:
-			return
+			break loop
 		case x < SEP || x > IMAG:
 			panic(fmt.Errorf("%s:%d:%d - scan fail", path, line, column))
 		}
@@ -333,7 +333,7 @@ func main() {
 	}()
 
 	v := &visitor{}
-	filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(runtime.GOROOT()+"/src", func(pth string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -342,6 +342,9 @@ func main() {
 			v.visitFile(pth, info)
 		}
 		return nil
-	}) 
+	}); err != nil {
+		panic(err)
+	}
+
 	fmt.Printf("%d .go files, %d bytes, %d tokens\n", v.count, v.size, v.tokCount)
 }
