@@ -5,4 +5,4 @@ Online godoc documentation for this tool available at:
 http://gopkgdoc.appspot.com/pkg/github.com/cznic/golex
 
 Installation:
-$ goinstall github.com/cznic/golex
+$ go get github.com/cznic/golex

@@ -8,9 +8,9 @@ package main
 
 import (
 	"bufio"
-	"github.com/cznic/lex"
 	"flag"
 	"fmt"
+	"github.com/cznic/lex"
 	"io"
 	"os"
 )

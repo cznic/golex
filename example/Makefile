@@ -4,20 +4,17 @@
 
 # blame: jnml, labs.nic.cz
 
-all: calc.go tokenizer.go
+all: example.go
 	go build
 
 run: all
-	./calc
+	./example
 
-tokenizer.go: tokenizer.l
+example.go: example.l
 	golex -t $< | gofmt > $@
 
-calc.go: calc.y
-	go tool yacc -o $@ $< && gofmt -w $@
-
 clean:
-	rm -f tokenizer.go calc.go lex.yy.go y.output *~
+	rm -f example.go lex.yy.go y.output *~
 
 nuke: clean
-	rm -f calc
+	rm -f example

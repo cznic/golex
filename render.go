@@ -7,9 +7,9 @@
 package main
 
 import (
+	"fmt"
 	"github.com/cznic/lex"
 	"github.com/cznic/lexer"
-	"fmt"
 	"strings"
 )
 
