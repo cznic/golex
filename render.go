@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/cznic/lex"
 	"github.com/cznic/lexer"
+	"sort"
 	"strings"
 )
 
@@ -43,7 +44,16 @@ func (r *renderGo) prolog(l *lex.L) {
 			r.wprintf("\n\nswitch yyt, yyb := %s, %s; yyt {\n", l.YYT, l.YYB)
 		}
 		r.wprintf("default:\npanic(fmt.Errorf(`invalid start condition %%d`, yyt))\n")
-		for sc, state := range l.StartConditionsStates {
+
+		// Stabilize map ranging
+		x := []int{}
+		for sc := range l.StartConditionsStates {
+			x = append(x, sc)
+		}
+		sort.Ints(x)
+
+		for _, sc := range x {
+			state := l.StartConditionsStates[sc]
 			r.wprintf("case %d: // start condition: %s\n", sc, scNames[sc])
 			if state, ok := l.StartConditionsBolStates[sc]; ok {
 				r.wprintf("if yyb { goto yystart%d }\n", state.Index)
@@ -188,22 +198,32 @@ func (r *renderGo) rangesEdgeString(edge *lexer.RangesEdge, l *lex.L) string {
 func (r *renderGo) transitions(l *lex.L, state *lexer.NfaState) {
 	r.wprintf("switch {\n")
 	var defaultEdge lexer.Edger = r.defaultTransition(l, state)
+
+	// Stabilize case order
+	a := []string{}
+	m := map[string]uint{}
 	for _, edge0 := range state.Consuming {
 		if edge0 == defaultEdge {
 			continue
 		}
 
-		r.wprintf("case ")
+		s := ""
 		switch edge := edge0.(type) {
 		default:
 			panic("unexpected type")
 		case *lexer.RuneEdge:
-			r.wprintf("%s == %s", l.YYC, q(uint32(edge.Rune)))
+			s = fmt.Sprintf("%s == %s", l.YYC, q(uint32(edge.Rune)))
 		case *lexer.RangesEdge:
-			r.wprintf(r.rangesEdgeString(edge, l))
+			s = fmt.Sprintf(r.rangesEdgeString(edge, l))
 		}
-		r.wprintf(":\ngoto yystate%d\n", edge0.Target().Index)
+		a = append(a, s)
+		m[s] = edge0.Target().Index
 	}
+	sort.Strings(a)
+	for _, s := range a {
+		r.wprintf("case %s:\ngoto yystate%d\n", s, m[s])
+	}
+
 	r.wprintf("}\n\n")
 }
 
