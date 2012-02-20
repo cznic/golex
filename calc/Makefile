@@ -14,10 +14,11 @@ tokenizer.go: tokenizer.l
 	golex -t $< | gofmt > $@
 
 calc.go: calc.y
-	go tool yacc -o $@ $< && gofmt -w $@
+	# double gofmt due to it not being idempotent
+	go tool yacc -o /dev/stdout $< | gofmt | gofmt > $@
 
 clean:
-	rm -f tokenizer.go calc.go lex.yy.go y.output *~
+	rm -f tokenizer.go calc.go lex.yy.go y.go y.output *~
 
 nuke: clean
 	rm -f calc
