@@ -5,6 +5,7 @@
 
 // blame: jnml, labs.nic.cz
 
+// +build ignore
 
 package main
 
