@@ -5,7 +5,7 @@
 # blame: jnml, labs.nic.cz
 
 all: calc.go tokenizer.go
-	go build
+	go build $^
 
 run: all
 	./calc

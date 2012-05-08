@@ -5,7 +5,7 @@
 # blame: jnml, labs.nic.cz
 
 all: example.go
-	go build
+	go build $<
 
 run: all
 	./example
