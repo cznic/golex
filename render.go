@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/cznic/lex"
 	"github.com/cznic/lexer"
+	"log"
 	"sort"
 	"strings"
 )
@@ -145,7 +146,7 @@ func (r *renderGo) defaultTransition(l *lex.L, state *lexer.NfaState) (defaultEd
 	for _, edge0 := range state.Consuming {
 		switch edge := edge0.(type) {
 		default:
-			panic("unexpected type")
+			log.Fatalf("unexpected type %T", edge0)
 		case *lexer.RuneEdge:
 			delete(cases, edge.Rune)
 		case *lexer.RangesEdge:
@@ -210,7 +211,7 @@ func (r *renderGo) transitions(l *lex.L, state *lexer.NfaState) {
 		s := ""
 		switch edge := edge0.(type) {
 		default:
-			panic("unexpected type")
+			log.Fatalf("unexpected type %T", edge0)
 		case *lexer.RuneEdge:
 			s = fmt.Sprintf("%s == %s", l.YYC, q(uint32(edge.Rune)))
 		case *lexer.RangesEdge:

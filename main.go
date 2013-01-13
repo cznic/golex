@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/cznic/lex"
 	"io"
+	"log"
 	"os"
 )
 
@@ -45,7 +46,7 @@ func (r *noRender) Write(p []byte) (n int, err error) {
 func (r *noRender) wprintf(s string, args ...interface{}) (n int, err error) {
 	n, err = io.WriteString(r.w, fmt.Sprintf(s, args...))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	return
@@ -66,15 +67,7 @@ func q(c uint32) string {
 }
 
 func main() {
-
-	defer func() {
-		if e := recover(); e != nil {
-			fmt.Fprintf(stderr, "%s: %s\n", os.Args[0], e.(error))
-			stderr.Flush()
-			os.Exit(1)
-		}
-	}()
-
+	log.SetFlags(log.Flags() | log.Lshortfile)
 	oflag := ""
 	var dfaflag, hflag, tflag, vflag, nodfaopt, bits32 bool
 
@@ -105,7 +98,7 @@ func main() {
 	} else {
 		l, err := os.Open(lname)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		defer l.Close()
@@ -114,12 +107,12 @@ func main() {
 
 	l, err := lex.NewL(lname, lfile, nodfaopt, bits32)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	if dfaflag {
 		fmt.Println(l.DfaString())
-		panic(nil)
+		os.Exit(1)
 	}
 
 	if tflag {
@@ -130,7 +123,7 @@ func main() {
 		}
 		g, err := os.Create(oflag)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		defer g.Close()

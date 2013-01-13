@@ -43,6 +43,7 @@
 //	import (
 //	    "bufio"
 //	    "fmt"
+//	    "log"
 //	    "os"
 //	)
 //	
@@ -100,7 +101,7 @@
 //	%%
 //	    // The rendered scanner enters top of the user code section when 
 //	    // lexem recongition fails. In this example it should never happen.
-//	    panic("scanner internal error")
+//	    log.Fatal("scanner internal error")
 //	
 //	} // *1 this right brace
 package documentation
