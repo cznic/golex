@@ -17,4 +17,4 @@ clean:
 	rm -f example2.go lex.yy.go y.output *~
 
 nuke: clean
-	rm -f example2
+	rm -f example2 *.[568]
