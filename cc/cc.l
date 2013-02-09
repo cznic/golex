@@ -67,8 +67,9 @@ func newLexer(file string, r io.Reader, errf Errf, buf []byte) (l *lexer) {
 		errf: errf,
 	}
 	if cap(buf) == 0 {
-		l.buf = make([]byte, 0, bufSize)
+		l.buf = make([]byte, bufSize)
 	}
+	l.buf = l.buf[:0]
 	return
 }
 
@@ -99,6 +100,7 @@ func (l *lexer) read() (c int) {
 		case l.err != io.EOF:
 			l.error(l.err.Error())
 		}
+		l.buf = l.buf[:0]
 		return -1
 	}
 	l.buf = l.buf[:n]
