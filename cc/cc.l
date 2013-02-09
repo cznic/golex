@@ -188,13 +188,13 @@ LW			[ \t\v\f]
 			}
 			sc = FILE
 
-<LINE>.			sc = EOL
+<LINE>.|\n		sc = EOL
 
 <FILE>[ \t\v\f]+
 
 <FILE>\"		sc = FN
 
-<FILE>.			sc = EOL
+<FILE>.|\n		sc = EOL
 
 <FN>[^\n\"]*\"
 			l.file = string(l.token[:len(l.token)-1])
