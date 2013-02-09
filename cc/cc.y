@@ -4,8 +4,11 @@ Copyright (c) 2013 jnml. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 
-Adaption of http://www.lysator.liu.se/c/ANSI-C-grammar-y.html (no copyright[s]
-declared there) as of 2013-02-09.
+Substantial parts of this file are an adaption of
+
+	http://www.lysator.liu.se/c/ANSI-C-grammar-y.html
+
+There's no copyright declared there as of 2013-02-09.
 
 ----
 
