@@ -1,10 +1,13 @@
 /*
-// Copyright (c) 2013 jnml. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+Copyright (c) 2013 jnml. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
 
 Adaption of http://www.lysator.liu.se/c/ANSI-C-grammar-l.html (no copyright[s]
 declared there) as of 2013-01-28.
+
+---
 
 ANSI C grammar, Lex specification
 
@@ -26,30 +29,93 @@ Jutta Degener, 1995
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// CAUTION: If this file is 'lexer.go', it was generated
-// automatically from 'lexer.l' - DO NOT EDIT in that case!
+// CAUTION: If this file is 'lex.yy.go', it was generated
+// automatically from 'cc.l' - DO NOT EDIT in that case!
+
+//TODO http://en.wikipedia.org/wiki/The_lexer_hack
 
 package cc
 
+import (
+	"io"
+)
+
+// Errf is an error reporting function. If it returns false then further
+// procesing (scanning, parsing, compiling) should be aborted.
+type Errf func(file string, line, col int, msg string, args ...interface{}) bool
+
 type lexer struct {
-	file    *token.File
-	base    int // file.Base()
+	file  string
+	line  int
+	col   int
+	r     io.Reader
+	buf   []byte
+	token []byte
+	errf  Errf
+	err   error
 }
 
-func newLexer(file *token.File, src io.Reader) *lexer {
-        file.AddLine(0)
-        if src[0] == '\n' {
-                file.AddLine(1)
-        }
-        return &lexer{
-                file:    file,
-                base:    file.Base(),
-                src:     src,
-        }
+func newLexer(file string, r io.Reader, errf Errf, buf []byte) (l *lexer) {
+	const bufSize = 1<<16
+
+	l = &lexer{
+		file: file,
+		line: 1,
+		col:  1,
+		r:    r,
+		buf:  buf,
+		errf: errf,
+	}
+	if cap(buf) == 0 {
+		l.buf = make([]byte, 0, bufSize)
+	}
+	return
 }
 
-func scan() {
-	var c int
+func (l *lexer) error(msg string, args ...interface{}) {
+	if l.errf(l.file, l.line, l.col, msg, args...) {
+		l.err = io.EOF
+	}
+}
+
+func (l *lexer) peek() (c int) {
+	if len(l.buf) == 0 {
+		return l.read()
+	}
+
+	return int(l.buf[0])
+}
+
+func (l *lexer) read() (c int) {
+	if l.err != nil {
+		return -1
+	}
+
+	var n int
+	if n, l.err = l.r.Read(l.buf[:cap(l.buf)]); n == 0 {
+		switch {
+		case l.err == nil:
+			l.err = io.EOF
+		case l.err != io.EOF:
+			l.error(l.err.Error())
+		}
+		return -1
+	}
+	l.buf = l.buf[:n]
+	return int(l.buf[0])	
+}
+
+func (l *lexer) next(curr int) (c int) {
+	l.token = append(l.token, byte(curr))
+	if len(l.buf) > 1 {
+		l.buf = l.buf[1:]
+		return int(l.buf[0])
+	}
+	return l.read()
+}
+
+func (l *lexer) scan() (ret int) {
+	c := l.peek()
 
 %}
 
@@ -60,15 +126,17 @@ E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
 
-%yyc 42
-%yyn c++
+%yyc c
+%yyn c = l.next(c)
 
 %%
-	if c == -1 { panic(c) } //TODO-
+	if ret != 0 {
+		return
+	}
+
+	l.token = l.token[:0]
 
 \/\*([^*]|\*+[^*/])*\*+\/
-	// "/*"			{ comment(); }
-	c++ //TODO-
 
 "auto"			// { count(); return(AUTO); }
 "break"			// { count(); return(BREAK); }
@@ -167,5 +235,6 @@ L?\"(\\.|[^\\"])*\"	// { count(); return(STRING_LITERAL); }
 .			// { /* ignore bad characters */ }
 
 %%
+	panic("unreachable")
 }
 
