@@ -44,6 +44,8 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+
+	"github.com/cznic/strutil"
 )
 
 // Errf is an error reporting function. If it returns false then further
@@ -51,12 +53,14 @@ import (
 type Errf func(file string, line, col int, msg string, args ...interface{}) bool
 
 type lexer struct {
-	file  string
+	dict  *strutil.Dict
+	file  int
 	line  int
 	col   int
 	r     io.Reader
 	buf   []byte
 	token []byte
+	id    int
 	errf  Errf
 	err   error
 	prev  int
@@ -64,11 +68,12 @@ type lexer struct {
 
 // newLexer returns a new `lexer`. `buf` is the scanner buffer to use, which
 // may be nil.
-func newLexer(file string, r io.Reader, errf Errf, buf []byte) (l *lexer) {
+func newLexer(dict *strutil.Dict, file string, r io.Reader, errf Errf, buf []byte) (l *lexer) {
 	const bufSize = 1<<16
 
 	l = &lexer{
-		file: file,
+		dict: dict,
+		file: dict.Id(file),
 		line: 1,
 		col:  1,
 		r:    r,
@@ -82,8 +87,16 @@ func newLexer(file string, r io.Reader, errf Errf, buf []byte) (l *lexer) {
 	return
 }
 
+func (l *lexer) s(id int) (str string) {
+	var ok bool
+	if str, ok = l.dict.S(id); !ok {
+		str = "<MISSING:string from id>"
+	}
+	return
+}
+
 func (l *lexer) error(msg string, args ...interface{}) {
-	if l.errf(l.file, l.line, l.col, msg, args...) {
+	if l.errf(l.s(l.file), l.line, l.col, msg, args...) {
 		l.err = io.EOF
 	}
 }
@@ -197,7 +210,7 @@ LW			[ \t\v\f]
 <FILE>.|\n		sc = EOL
 
 <FN>[^\n\"]*\"
-			l.file = string(l.token[:len(l.token)-1])
+			l.file = l.dict.Id(string(l.token[:len(l.token)-1]))
 			l.line = line - 1
 			sc = EOL
 
@@ -305,7 +318,7 @@ L?\"(\\.|[^\\"])*\"	// { count(); return(STRING_LITERAL); }
 
 %%
 			panic(fmt.Errorf(
-				"%s.%d:%d: unreachable, sc %d, l.peek() == %d",
-				l.file, l.line, l.col, sc, l.peek()),
-			)
+				"%s.%d:%d: unreachable, sc %d, l.peek() %d, l.token %q",
+				l.file, l.line, l.col, sc, l.peek(), l.token,
+			))
 }

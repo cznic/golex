@@ -12,6 +12,8 @@ import (
 	"io"
 	"strings"
 	"testing"
+
+	"github.com/cznic/strutil"
 )
 
 func TestScanPeekNext(t *testing.T) {
@@ -24,10 +26,11 @@ func TestScanPeekNext(t *testing.T) {
 		for n := 0; n <= N; n++ {
 			b = b[:n]
 			for sz := 0; sz <= len(b)+2; sz++ {
-				//r := bytes.NewReader(b)
 				r := rf()
+				d := strutil.NewDict()
 				failed := false
 				l := newLexer(
+					d,
 					"file",
 					r,
 					func(file string, line, col int, msg string, args ...interface{}) bool {
@@ -225,7 +228,9 @@ func TestLineDirectives(t *testing.T) {
 	}
 	for i, test := range tab {
 		r := strings.NewReader(test.s)
+		d := strutil.NewDict()
 		l := newLexer(
+			d,
 			m,
 			r,
 			func(file string, line, col int, msg string, args ...interface{}) bool {
@@ -245,7 +250,7 @@ func TestLineDirectives(t *testing.T) {
 			}
 		}
 
-		if l.file != test.file || l.line != test.line || l.col != test.col {
+		if l.file != d.Id(test.file) || l.line != test.line || l.col != test.col {
 			t.Fatalf(
 				`%d: (%q) got "%s.%d:%d", exp "%s.%d:%d"`,
 				i, test.s,
