@@ -104,4 +104,4 @@
 //	    log.Fatal("scanner internal error")
 //	
 //	} // *1 this right brace
-package documentation
+package main
