@@ -15,4 +15,4 @@ todo:
 	grep -n TODO|println *.go || true
 
 clean:
-	rm -f lex.yy.go y.go parser.tab.c y.output cc.tab.c
+	rm -f parser.tab.c y.output cc.tab.c
