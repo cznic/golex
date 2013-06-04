@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2013 jnml. All rights reserved.
+Copyright (c) 2013 Go Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
 license that can be found in the LICENSE file.
 
@@ -9,6 +9,12 @@ Substantial parts of this file are an adaption of
 	http://www.lysator.liu.se/c/ANSI-C-grammar-l.html
 
 There is no copyright declared there as of 2013-01-28.
+
+CAUTION: If this file is 'lex.yy.go', it was generated
+automatically from 'cc.l' - DO NOT EDIT in that case!
+
+TODO http://en.wikipedia.org/wiki/The_lexer_hack
+TODO remove single char tokens from the lexical grammar
 
 ---
 
@@ -28,16 +34,6 @@ Jutta Degener, 1995
 */
 
 %{
-// Copyright (c) 2013 jnml. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
-// CAUTION: If this file is 'lex.yy.go', it was generated
-// automatically from 'cc.l' - DO NOT EDIT in that case!
-
-//TODO http://en.wikipedia.org/wiki/The_lexer_hack
-//TODO remove single char tokens from the lexical grammar
-
 package cc
 
 import (
@@ -288,32 +284,14 @@ L?\"(\\.|[^\\"])*\"	// { count(); return(STRING_LITERAL); }
 ">="			ret = GE_OP
 "=="			ret = EQ_OP
 "!="			ret = NE_OP
-";"			// { count(); return(';'); }
-("{"|"<%")		// { count(); return('{'); }
-("}"|"%>")		// { count(); return('}'); }
-","			// { count(); return(','); }
-":"			// { count(); return(':'); }
-"="			// { count(); return('='); }
-"("			// { count(); return('('); }
-")"			// { count(); return(')'); }
-("["|"<:")		// { count(); return('['); }
-("]"|":>")		// { count(); return(']'); }
-"."			// { count(); return('.'); }
-"&"			// { count(); return('&'); }
-"!"			// { count(); return('!'); }
-"~"			// { count(); return('~'); }
-"-"			// { count(); return('-'); }
-"+"			// { count(); return('+'); }
-"*"			// { count(); return('*'); }
-"/"			// { count(); return('/'); }
-"%"			// { count(); return('%'); }
-"<"			// { count(); return('<'); }
-">"			// { count(); return('>'); }
-"^"			// { count(); return('^'); }
-"|"			// { count(); return('|'); }
-"?"			// { count(); return('?'); }
 
-({LW}|\n)+		// { count(); }
+("{"|"<%")		ret = '{'
+("}"|"%>")		ret = '}'
+("["|"<:")		ret = '['
+("]"|":>")		ret = ']'
+
+({LW}|\n)+
+
 .			ret = c
 
 %%

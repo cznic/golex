@@ -1,6 +1,6 @@
 //line cc.y:28
 
-// Copyright (c) 2013 jnml. All rights reserved.
+// Copyright (c) 2013 Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -145,7 +145,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyMaxDepth = 200
 
-//line cc.y:463
+//line cc.y:464
 
 /*TODO
 #include <stdio.h>
