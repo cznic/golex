@@ -39,6 +39,7 @@ import (
 	"io"
 	"strconv"
 
+	"github.com/cznic/fileutil"
 	"github.com/cznic/strutil"
 )
 
@@ -115,7 +116,7 @@ func (l *lexer) read() (c int) {
 		switch {
 		case l.err == nil:
 			l.err = io.EOF
-		case l.err != io.EOF:
+		case !fileutil.IsEOF(l.err):
 			l.error(l.err.Error())
 		}
 		l.buf = l.buf[:0]

@@ -42,6 +42,7 @@ import (
 	"strconv"
 
 	"github.com/cznic/strutil"
+	"github.com/cznic/fileutil"
 )
 
 // Errf is an error reporting function. If it returns false then further
@@ -117,7 +118,7 @@ func (l *lexer) read() (c int) {
 		switch {
 		case l.err == nil:
 			l.err = io.EOF
-		case l.err != io.EOF:
+		case !fileutil.IsEOF(l.err):
 			l.error(l.err.Error())
 		}
 		l.buf = l.buf[:0]
