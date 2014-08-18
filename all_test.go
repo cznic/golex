@@ -1,8 +1,6 @@
-// Copyright (c) 2010 CZ.NIC z.s.p.o. All rights reserved.
+// Copyright (c) 2014 The golex Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-// blame: jnml, labs.nic.cz
 
 package main
 

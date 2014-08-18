@@ -1,8 +1,6 @@
-// Copyright (c) 2011 CZ.NIC z.s.p.o. All rights reserved.
+// Copyright (c) 2014 The golex Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
-// blame: jnml, labs.nic.cz
 
 // Golex is a lex/flex like (not fully POSIX lex compatible) utility.
 // It renders .l formated data (http://flex.sourceforge.net/manual/Format.html#Format) to Go source code.
@@ -39,20 +37,20 @@
 //
 //	%{
 //	package main
-//	
+//
 //	import (
 //	    "bufio"
 //	    "fmt"
 //	    "log"
 //	    "os"
 //	)
-//	
+//
 //	var (
 //	    src      = bufio.NewReader(os.Stdin)
 //	    buf      []byte
 //	    current  byte
 //	)
-//	
+//
 //	func getc() byte {
 //	    if current != 0 {
 //	        buf = append(buf, current)
@@ -63,7 +61,7 @@
 //	    }
 //	    return current
 //	}
-//	
+//
 //	//    %yyc is a "macro" to access the "current" character.
 //	//
 //	//    %yyn is a "macro" to move to the "next" character.
@@ -79,29 +77,29 @@
 //	func main() { // This left brace is closed by *1
 //	    c := getc() // init
 //	%}
-//	
+//
 //	%yyc c
 //	%yyn c = getc()
-//	
+//
 //	D   [0-9]+
-//	
+//
 //	%%
 //	    buf = buf[:0]   // Code before the first rule is executed before every scan cycle (state 0 action)
-//	
+//
 //	[ \t\n\r]+          // Ignore whitespace
-//	
+//
 //	{D}                 fmt.Printf("int %q\n", buf)
-//	
+//
 //	{D}\.{D}?|\.{D}     fmt.Printf("float %q\n", buf)
-//	
+//
 //	\0                  return // Exit on EOF or any other error
-//	
+//
 //	.                   fmt.Printf("%q\n", buf) // Printout any other unrecognized stuff
-//	
+//
 //	%%
-//	    // The rendered scanner enters top of the user code section when 
+//	    // The rendered scanner enters top of the user code section when
 //	    // lexem recongition fails. In this example it should never happen.
 //	    log.Fatal("scanner internal error")
-//	
+//
 //	} // *1 this right brace
 package main
