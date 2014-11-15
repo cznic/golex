@@ -6,12 +6,15 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
-	"github.com/cznic/lex"
+	"go/format"
 	"io"
 	"log"
 	"os"
+
+	"github.com/cznic/lex"
 )
 
 const (
@@ -128,7 +131,20 @@ func main() {
 		gofile = bufio.NewWriter(g)
 	}
 	defer gofile.Flush()
-	renderGo{noRender{gofile}, map[int]bool{}}.render(lname, l)
+	var buf bytes.Buffer
+	renderGo{noRender{&buf}, map[int]bool{}}.render(lname, l)
+	dst, err := format.Source(buf.Bytes())
+	switch {
+	case err != nil:
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		if _, err := gofile.Write(buf.Bytes()); err != nil {
+			log.Fatal(err)
+		}
+	default:
+		if _, err := gofile.Write(dst); err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	if vflag {
 		fmt.Fprintln(os.Stderr, l.String())

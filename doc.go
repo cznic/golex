@@ -15,11 +15,9 @@
 //	-v              write some scanner statistics to stderr
 //	-32bit          assume unicode rune lexer (partially implemented, disabled)
 //
-// Golex output is not pretty formated, use the standard tool:
+// Changelog
 //
-//	    $ golex -t file.l | gofmt > file.go
-//	or
-//	    $ golex -o file.go file.l && gofmt -w file.go
+// 2014-11-15: Golex's output is now gofmt'ed, if possible.
 //
 // Missing/differing functionality of the current renderer (compared to flex):
 //	- No runtime tokenizer package/environment
