@@ -15,7 +15,153 @@
 //	-v              write some scanner statistics to stderr
 //	-32bit          assume unicode rune lexer (partially implemented, disabled)
 //
+// To get the latest golex version:
+//
+//	$ go get -u github.com/cznic/golex
+//
 // Changelog
+//
+// 2014-11-18: Golex now supports %yym - a hook which can be used to mark an
+// accepting state.
+//
+// Implementing POSIX-like longest match
+//
+// Consider for example this .l file:
+//
+//	$ cat main.l
+//	%{
+//	package main
+//
+//	import (
+//		"flag"
+//		"fmt"
+//	)
+//
+//	var (
+//		c    byte
+//		src  string
+//		in   []byte
+//		un   []byte
+//		mark int
+//	)
+//
+//	func lex() (s string) {
+//	%}
+//
+//	%yyn next()
+//	%yyc c
+//	%yym fmt.Printf("\tstate accepts: %q\n", in); mark = len(in)
+//
+//	%%
+//		in = in[:0]
+//		mark = -1
+//
+//	\0
+//		return "EOF"
+//
+//	a([bcd]*z([efg]*z)?)?
+//		return fmt.Sprintf("%q", in)
+//
+//	%%
+//		if mark >= 0 {
+//			if len(in) > mark {
+//				unget(c)
+//				for i := len(in)-1; i >= mark; i-- {
+//					unget(in[i])
+//				}
+//				next()
+//			}
+//			return fmt.Sprintf("%q", in[:mark])
+//		}
+//
+//		switch n := len(in); n {
+//		case 0: // [] z
+//			s = fmt.Sprintf("%q", c)
+//			next()
+//		case 1: // [x] z
+//			s = fmt.Sprintf("%q", in[0])
+//		default: // [x, y, ...], z
+//			s = fmt.Sprintf("%q", in[0])
+//			unget(c) // z
+//			for i := n - 1; i > 1; i-- {
+//				unget(in[i]) // ...
+//			}
+//			c = in[1] // y
+//		}
+//		return s
+//	}
+//
+//	func next() {
+//		if len(un) != 0 {
+//			c = un[len(un)-1]
+//			un = un[:len(un)-1]
+//			return
+//		}
+//
+//		in = append(in, c)
+//		if len(src) == 0 {
+//			c = 0
+//			return
+//		}
+//
+//		c = src[0]
+//		fmt.Printf("\tnext: %q\n", c)
+//		src = src[1:]
+//	}
+//
+//	func unget(b byte) {
+//		un = append(un, b)
+//	}
+//
+//	func main() {
+//		flag.Parse()
+//		if flag.NArg() > 0 {
+//			src = flag.Arg(0)
+//		}
+//		next()
+//		for {
+//			s := lex()
+//			fmt.Println(s)
+//			if s == "EOF" {
+//				break
+//			}
+//		}
+//	}
+//	$
+//
+// Execution and output:
+//
+//	$ golex -o main.go main.l && go run main.go abzez0abzefgxy
+//		next: 'a'
+//		next: 'b'
+//		state accepts: "a"
+//		next: 'z'
+//		next: 'e'
+//		state accepts: "abz"
+//		next: 'z'
+//		next: '0'
+//		state accepts: "abzez"
+//	"abzez"
+//		next: 'a'
+//	'0'
+//		next: 'b'
+//		state accepts: "a"
+//		next: 'z'
+//		next: 'e'
+//		state accepts: "abz"
+//		next: 'f'
+//		next: 'g'
+//		next: 'x'
+//	"abz"
+//	'e'
+//	'f'
+//	'g'
+//		next: 'y'
+//	'x'
+//	'y'
+//		state accepts: "\x00"
+//	EOF
+//	$
 //
 // 2014-11-15: Golex's output is now gofmt'ed, if possible.
 //

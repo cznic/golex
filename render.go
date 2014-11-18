@@ -227,6 +227,7 @@ func (r *renderGo) transitions(l *lex.L, state *lexer.NfaState) {
 }
 
 func (r *renderGo) states(l *lex.L) {
+	r.wprintf("goto yystate%d // silence unused label error\n", 0)
 	for _, state := range l.Dfa {
 		iState := int(state.Index)
 		if _, ok := r.scStates[iState]; ok {
@@ -236,6 +237,9 @@ func (r *renderGo) states(l *lex.L) {
 		rule, ok := l.Accepts[state]
 		if !ok || !l.Rules[rule].EOL {
 			r.wprintf("%s\n", l.YYN)
+		}
+		if ok {
+			r.wprintf("%s\n", l.YYM)
 		}
 		if _, ok := r.scStates[iState]; ok {
 			r.wprintf("yystart%d:\n", iState)
