@@ -238,7 +238,7 @@ func (r *renderGo) states(l *lex.L) {
 		if !ok || !l.Rules[rule].EOL {
 			r.wprintf("%s\n", l.YYN)
 		}
-		if ok {
+		if ok && l.YYM != "yym" {
 			r.wprintf("%s\n", l.YYM)
 		}
 		if _, ok := r.scStates[iState]; ok {
