@@ -29,6 +29,9 @@ func (r *renderGo) prolog(l *lex.L) {
 		r.w.Write([]byte(line))
 	}
 	r.wprintf("\nyystate0:\n")
+	if l.YYM != "yym" {
+		r.wprintf("yyrule := -1\n_ = yyrule")
+	}
 	if action0 := l.Rules[0].Action; action0 != "" {
 		r.w.Write([]byte(action0))
 	}
@@ -227,7 +230,17 @@ func (r *renderGo) transitions(l *lex.L, state *lexer.NfaState) {
 }
 
 func (r *renderGo) states(l *lex.L) {
+	yym := l.YYM != "yym"
 	r.wprintf("goto yystate%d // silence unused label error\n", 0)
+	if yym {
+		r.wprintf("goto yyAction // silence unused label error\n")
+		r.wprintf("yyAction:\n")
+		r.wprintf("switch yyrule {\n")
+		for i := range l.Rules[1:] {
+			r.wprintf("case %d:\ngoto yyrule%d\n", i+1, i+1)
+		}
+		r.wprintf("}\n")
+	}
 	for _, state := range l.Dfa {
 		iState := int(state.Index)
 		if _, ok := r.scStates[iState]; ok {
@@ -239,6 +252,7 @@ func (r *renderGo) states(l *lex.L) {
 			r.wprintf("%s\n", l.YYN)
 		}
 		if ok && l.YYM != "yym" {
+			r.wprintf("yyrule = %d\n", rule)
 			r.wprintf("%s\n", l.YYM)
 		}
 		if _, ok := r.scStates[iState]; ok {

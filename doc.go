@@ -60,7 +60,7 @@
 //		return "EOF"
 //
 //	a([bcd]*z([efg]*z)?)?
-//		return fmt.Sprintf("%q", in)
+//		return fmt.Sprintf("match(%q)", in)
 //
 //	%%
 //		if mark >= 0 {
@@ -71,7 +71,8 @@
 //				}
 //				next()
 //			}
-//			return fmt.Sprintf("%q", in[:mark])
+//			in = in[:mark]
+//			goto yyAction // Hook: Execute the semantic action of the last matched rule.
 //		}
 //
 //		switch n := len(in); n {
@@ -141,7 +142,7 @@
 //		next: 'z'
 //		next: '0'
 //		state accepts: "abzez"
-//	"abzez"
+//	match("abzez")
 //		next: 'a'
 //	'0'
 //		next: 'b'
@@ -152,7 +153,7 @@
 //		next: 'f'
 //		next: 'g'
 //		next: 'x'
-//	"abz"
+//	match("abz")
 //	'e'
 //	'f'
 //	'g'
