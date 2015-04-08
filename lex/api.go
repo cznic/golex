@@ -49,7 +49,7 @@ type Char struct {
 }
 
 // NewChar returns a new Char value.
-func NewChar(pos token.Pos, r rune) Char { return Char{int32(pos), r} }
+func NewChar(pos token.Pos, r rune) Char { return Char{pos: int32(pos), Rune: r} }
 
 // IsValid reports whether c is not a zero Char.
 func (c Char) IsValid() bool { return c.Pos().IsValid() }
@@ -204,7 +204,7 @@ func (l *Lexer) Mark() { l.mark = len(l.tokenBuf) }
 func (l *Lexer) next() int {
 	const bom = '\ufeff'
 
-	if c := l.lookahead; !c.IsValid() {
+	if c := l.lookahead; c.IsValid() {
 		l.tokenBuf = append(l.tokenBuf, c)
 	}
 	if n := len(l.ungetBuf); n != 0 {
