@@ -7,8 +7,8 @@
 grep=--include=*.go --include=*.l --include=*.y
 
 all: editor
-	go vet
-	golint
+	go vet || true
+	golint || true
 	make todo
 
 clean:
@@ -23,10 +23,13 @@ cpu:
 	./cpu.test -noerr -test.cpuprofile cpu.out
 	go tool pprof --lines cpu.test cpu.out
 
-editor:
+editor: example_test.go
 	gofmt -l -s -w *.go
 	go test
 	go build
+
+example_test.go: example.l
+	golex -o $@ $<
 
 internalError:
 	egrep -ho '"internal error.*"' *.go | sort | cat -n

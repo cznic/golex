@@ -22,7 +22,7 @@ const (
 
 const (
 	NonASCII = 0x80 // DefaultRuneClass returns NonASCII for non ASCII runes.
-	RuneEOF  = -1
+	RuneEOF  = -1   // Distinct from any valid Unicode rune value.
 )
 
 // DefaultRuneClass returns the character class of r. If r is an ASCII code
@@ -76,6 +76,15 @@ type Lexer struct {
 }
 
 // New returns a new *Lexer. The result can be amended using opts.
+//
+// Non Unicode Input
+//
+// To consume sources in other encodings and still have exact position
+// information, pass an io.RuneReader which returns the next input character
+// reencoded as an Unicode rune but returns the size (number of bytes used to
+// encode it) of the original character, not the size of its UTF-8
+// representation after converted to an Unicode rune.  Size is the second
+// returned value of io.RuneReader.ReadRune method[4].
 func New(file *token.File, src io.RuneReader, opts ...Option) (*Lexer, error) {
 	r := &Lexer{
 		File:    file,
@@ -182,9 +191,11 @@ func (l *Lexer) defaultErrorf(pos token.Pos, msg string) {
 }
 
 // Enter ensures the lexer has a valid lookahead Char and returns its class.
-// Typical usage in an .l file:
+// Typical use in an .l file
 //
-//	%yyn c = l.Next()
+//	func (l *lexer) scan() lex.Char {
+//		c := l.Enter()
+//		...
 func (l *Lexer) Enter() int {
 	if !l.lookahead.IsValid() {
 		l.Next()
@@ -198,7 +209,9 @@ func (l *Lexer) Error(msg string) {
 }
 
 // Mark records the current state of scanner as accepting. It implements the
-// golex macro %yym.
+// golex macro %yym. Typical usage in an .l file:
+//
+//	%yym l.Mark()
 func (l *Lexer) Mark() { l.mark = len(l.tokenBuf) }
 
 func (l *Lexer) next() int {
@@ -269,7 +282,9 @@ again:
 }
 
 // Next advances the scanner for one rune and returns the respective character
-// class of the new lookahead.
+// class of the new lookahead.  Typical usage in an .l file:
+//
+//	%yyn c = l.Next()
 func (l *Lexer) Next() int {
 	l.Prev = l.Last
 	r := l.next()
@@ -282,7 +297,15 @@ func (l *Lexer) Offset() int { return l.off }
 
 // Rule0 initializes the scanner state before the attempt to recognize a token
 // starts. The token collecting buffer is cleared.  Rule0 records the current
-// lookahead in l.First and returns its class.
+// lookahead in l.First and returns its class.  Typical usage in an .l file:
+//
+//	... lex definitions
+//
+//	%%
+//
+//		c := l.Rule0()
+//
+//	first-pattern-regexp
 func (l *Lexer) Rule0() int {
 	l.First = l.lookahead
 	l.mark = -1
@@ -337,7 +360,9 @@ func BOMMode(mode int) Option {
 	}
 }
 
-// ErrorFunc option sets a function called when an, for example I/O error, occurs.
+// ErrorFunc option sets a function called when an, for example I/O error,
+// occurs.  The default is to call Error with the position and message already
+// formated as a string.
 func ErrorFunc(f func(token.Pos, string)) Option {
 	return func(l *Lexer) error {
 		l.errorf = f
