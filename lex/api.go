@@ -223,7 +223,9 @@ func (l *Lexer) next() int {
 	var pos token.Pos
 again:
 	r, sz, err = l.src.ReadRune()
+	off0 := l.off
 	pos = l.File.Pos(l.off)
+	l.off += sz
 	if err != nil {
 		l.src = nil
 		r = RuneEOF
@@ -237,33 +239,29 @@ again:
 		default:
 			fallthrough
 		case BOMIgnoreFirst:
-			if l.off != 0 {
+			if off0 != 0 {
 				l.errorf(pos, "unicode (UTF-8) BOM in middle of file")
 			}
-			l.off += sz
 			goto again
 		case BOMPassAll:
 			// nop
 		case BOMPassFirst:
-			if l.off != 0 {
+			if off0 != 0 {
 				l.errorf(pos, "unicode (UTF-8) BOM in middle of file")
-				l.off += sz
 				goto again
 			}
 		case BOMError:
 			switch {
-			case l.off == 0:
+			case off0 == 0:
 				l.errorf(pos, "unicode (UTF-8) BOM at beginnig of file")
 			default:
 				l.errorf(pos, "unicode (UTF-8) BOM in middle of file")
 			}
-			l.off += sz
 			goto again
 		}
 	}
 
 	l.lookahead = NewChar(pos, r)
-	l.off += sz
 	if r == '\n' {
 		l.File.AddLine(l.off)
 	}
@@ -279,10 +277,10 @@ func (l *Lexer) Next() int {
 	return r
 }
 
-// Offset returns the number of bytes that was read from the lexer's source so far.
+// Offset returns the current reading offset of the lexer's source.
 func (l *Lexer) Offset() int { return l.off }
 
-// Rule0 initializesthe scanner state before the attempt to recognize a token
+// Rule0 initializes the scanner state before the attempt to recognize a token
 // starts. The token collecting buffer is cleared.  Rule0 records the current
 // lookahead in l.First and returns its class.
 func (l *Lexer) Rule0() int {
