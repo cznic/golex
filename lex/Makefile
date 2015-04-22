@@ -26,7 +26,7 @@ cpu:
 editor: example_test.go
 	gofmt -l -s -w *.go
 	go test
-	go build
+	go install
 
 example_test.go: example.l
 	golex -o $@ $<
