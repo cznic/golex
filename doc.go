@@ -19,6 +19,10 @@
 //
 //	$ go get -u github.com/cznic/golex
 //
+// Run time library
+//
+// Please see http://godoc.org/github.com/cznic/golex/lex.
+//
 // Changelog
 //
 // 2014-11-18: Golex now supports %yym - a hook which can be used to mark an
