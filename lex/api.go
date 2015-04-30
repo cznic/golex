@@ -159,7 +159,6 @@ func (l *Lexer) Abort() (int, bool) {
 			for i := len(l.tokenBuf) - 1; i >= l.mark; i-- {
 				l.Unget(l.tokenBuf[i])
 			}
-			l.Next()
 		}
 		l.tokenBuf = l.tokenBuf[:l.mark]
 		return 0, false
@@ -310,6 +309,9 @@ func (l *Lexer) Offset() int { return l.off }
 //
 //	first-pattern-regexp
 func (l *Lexer) Rule0() int {
+	if !l.lookahead.IsValid() {
+		l.Next()
+	}
 	l.First = l.lookahead
 	l.mark = -1
 	if len(l.tokenBuf) > 1<<18 { //DONE constant tuned
@@ -350,6 +352,7 @@ func (l *Lexer) Unget(c ...Char) {
 	for _, c := range c {
 		l.ungetBuf = append(l.ungetBuf, c)
 	}
+	l.lookahead = Char{} // Must invalidate lookahead.
 }
 
 // Option is a function which can be passed as an optional argument to New.
