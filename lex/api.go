@@ -208,7 +208,12 @@ func (l *Lexer) Error(msg string) {
 }
 
 // Lookahead returns the current lookahead.
-func (l *Lexer) Lookahead() Char { return l.lookahead }
+func (l *Lexer) Lookahead() Char {
+	if !l.lookahead.IsValid() {
+		l.Next()
+	}
+	return l.lookahead
+}
 
 // Mark records the current state of scanner as accepting. It implements the
 // golex macro %yym. Typical usage in an .l file:
