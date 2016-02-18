@@ -5,19 +5,20 @@
 # blame: jnml, labs.nic.cz
 
 all: calc.go tokenizer.go
+	gofmt -l -s -w *.go
 	go build $^
 
 run: all
 	./calc
 
 tokenizer.go: tokenizer.l
-	golex -t $< | gofmt > $@
+	golex -o $@ $<
 
 calc.go: calc.y
-	# double gofmt due to it not being idempotent
-	go tool yacc -o /dev/stdout $< | gofmt | gofmt > $@
+	go tool yacc -o $@ $<
 
 clean:
+	go clean
 	rm -f tokenizer.go calc.go lex.yy.go y.go y.output *~
 
 nuke: clean
