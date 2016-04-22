@@ -375,9 +375,7 @@ func (l *Lexer) TokenBytes(builder func(*bytes.Buffer)) []byte {
 
 // Unget unreads all chars in c.
 func (l *Lexer) Unget(c ...Char) {
-	for _, c := range c {
-		l.ungetBuf = append(l.ungetBuf, c)
-	}
+	l.ungetBuf = append(l.ungetBuf, c...)
 	l.lookahead = Char{} // Must invalidate lookahead.
 }
 
