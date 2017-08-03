@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	OFILE = "lex.yy.go"
+	oFile = "lex.yy.go"
 )
 
 var (
@@ -63,8 +63,6 @@ func q(c uint32) string {
 	case '"':
 		return "'\"'"
 	}
-
-	panic("unreachable")
 }
 
 func main() {
@@ -74,8 +72,8 @@ func main() {
 
 	flag.BoolVar(&dfaflag, "DFA", false, "write DFA on stdout and quit")
 	flag.BoolVar(&hflag, "h", false, "show help and exit")
-	flag.StringVar(&oflag, "o", OFILE, "lexer output")
-	flag.BoolVar(&tflag, "t", false, "write scanner on stdout instead of "+OFILE)
+	flag.StringVar(&oflag, "o", oFile, "lexer output")
+	flag.BoolVar(&tflag, "t", false, "write scanner on stdout instead of "+oFile)
 	flag.BoolVar(&vflag, "v", false, "write summary of scanner statistics to stderr")
 	flag.BoolVar(&nodfaopt, "nodfaopt", false, "disable DFA optimization - don't use this for production code")
 	//flag.BoolVar(&bits32, "32bit", false, "assume unicode rune lexer (partially implemented)")
@@ -120,7 +118,7 @@ func main() {
 		gofile = stdout
 	} else {
 		if oflag == "" {
-			oflag = OFILE
+			oflag = oFile
 		}
 		g, err := os.Create(oflag)
 		if err != nil {

@@ -211,7 +211,7 @@
 //	//
 //	//    %yyn is a "macro" to move to the "next" character.
 //	//
-//	//    %yyb is a "macro" to return the begining-of-line status (a bool typed value).
+//	//    %yyb is a "macro" to return the beginning-of-line status (a bool typed value).
 //	//        It is used for patterns like `^re`.
 //	//        Example: %yyb prev == 0 || prev == '\n'
 //	//
@@ -243,7 +243,7 @@
 //
 //	%%
 //	    // The rendered scanner enters top of the user code section when
-//	    // lexem recongition fails. In this example it should never happen.
+//	    // lexem recognition fails. In this example it should never happen.
 //	    log.Fatal("scanner internal error")
 //
 //	} // *1 this right brace
